@@ -3,6 +3,9 @@
 
   const d = document;
   const body = d.body;
+  const PRELOADER_MIN_MS = 3600;
+  const preloaderStartedAt = performance.now();
+  let preloaderReleaseRequested = false;
   const preloaderMarkup = '<div id="preloader" aria-label="Loading Mouaz Shabbir website">' +
     '<div class="preloader-photo"><img src="mouaz-photo.png" alt="Mouaz Shabbir"></div>' +
     '<div class="preloader-text">MOUAZ<span>.</span>SHABBIR</div>' +
@@ -20,7 +23,18 @@
   function hidePreloader() {
     const pre = d.getElementById('preloader');
     if (pre) pre.classList.add('hide');
-    if (body) body.classList.add('page-loaded');
+    if (body) {
+      body.classList.remove('preloading');
+      body.classList.add('page-loaded');
+    }
+  }
+
+  function requestPreloaderHide() {
+    if (preloaderReleaseRequested) return;
+    preloaderReleaseRequested = true;
+    const elapsed = performance.now() - preloaderStartedAt;
+    const delay = Math.max(0, PRELOADER_MIN_MS - elapsed);
+    window.setTimeout(hidePreloader, delay);
   }
 
   function setupImages() {
@@ -91,7 +105,7 @@
     const targets = d.querySelectorAll([
       '.stat-card', '.service-card', '.timeline-item', '.result-card', '.trust-card',
       '.course-card', '.price-card', '.roadmap-stage', '.practical-card', '.note-card',
-      '.skill-group', '.contact-link'
+      '.skill-group', '.contact-link', '.testimonial-card'
     ].join(','));
 
     if (!('IntersectionObserver' in window)) {
@@ -179,6 +193,7 @@
     };
   }
 
+  if (body) body.classList.add('preloading');
   ensurePreloader();
   setupImages();
   setupNav();
@@ -187,6 +202,6 @@
   setupTransitions();
   patchCourseCartButtons();
 
-  window.addEventListener('load', () => window.setTimeout(hidePreloader, 420));
-  window.setTimeout(hidePreloader, 6600);
+  window.addEventListener('load', requestPreloaderHide);
+  window.setTimeout(requestPreloaderHide, 4200);
 })();
