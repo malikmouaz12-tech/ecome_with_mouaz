@@ -188,5 +188,5 @@
   patchCourseCartButtons();
 
   window.addEventListener('load', () => window.setTimeout(hidePreloader, 420));
-  window.setTimeout(hidePreloader, 3600);
+  window.setTimeout(hidePreloader, 6600);
 })();
